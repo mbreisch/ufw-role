@@ -12,6 +12,13 @@
 
 - name: Run ufw tests
   hosts: docker_containers
+  vars:
+    allow_ipv6: "no"
+    ssh_port: 2222
+    rules:
+        - { rule: 'limit', port: '{{ ssh_port | default("22") }}', proto: 'tcp' }
+        - { rule: 'allow', port: '2000', proto: 'udp' }
+        - { rule: 'allow', port: '25', proto: 'tcp' }
   roles:
     - role: ufw-role
   tasks:

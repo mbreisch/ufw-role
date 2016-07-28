@@ -15,16 +15,13 @@
 - name: Configure IPV6
   lineinfile: dest=/etc/default/ufw
               regexp="^IPV6="
-              line="IPV6={{ ipv6_enabled | default('no')  }} "
+              line="IPV6={{ allow_ipv6 | default('no')  }} "
               state=present
   notify: reload ufw
 
 - name: Configure ufw rules
   ufw: rule={{ item.rule }} port={{ item.port }} proto={{ item.proto }}
-  with_items:
-    - { rule: 'limit', port: '{{ ssh_port | default("22") }}', proto: 'tcp' }
-    - { rule: 'allow', port: '80', proto: 'tcp' }
-    - { rule: 'allow', port: '443', proto: 'tcp' }
+  with_items: "{{ rules }}"
   notify:
     - reload ufw
 
