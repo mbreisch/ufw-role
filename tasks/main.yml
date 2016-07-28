@@ -1,0 +1,30 @@
+---
+# tasks file for mbreisch.ufw-role
+
+- name: Ensure ufw is installed
+  apt: name=ufw state=latest update_cache=yes
+
+- name: Configure ufw defaults
+  ufw: direction={{ item.direction }} policy={{ item.policy }}
+  with_items:
+    - { direction: 'incoming', policy: 'reject' }
+    - { direction: 'outgoing', policy: 'allow' }
+  notify:
+    - reload ufw
+
+- name: Configure ufw rules
+  ufw: rule={{ item.rule }} port={{ item.port }} proto={{ item.proto }}
+  with_items:
+    - { rule: 'limit', port: '{{ ssh_port | default("22") }}', proto: 'tcp' }
+    - { rule: 'allow', port: '80', proto: 'tcp' }
+    - { rule: 'allow', port: '443', proto: 'tcp' }
+  notify:
+    - reload ufw
+
+- name: Enable ufw logging
+  ufw: logging=on
+  notify:
+    - reload ufw
+
+- name: Enable ufw
+  ufw: state=enabled

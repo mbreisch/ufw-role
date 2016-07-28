@@ -1,0 +1,4 @@
+---
+# handlers file for mbreisch.ufw-role
+- name: reload ufw
+  service: name=ufw state=reloaded
