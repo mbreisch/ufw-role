@@ -20,7 +20,7 @@
   notify: reload ufw
 
 - name: Configure ufw rules
-  ufw: rule={{ item.rule }} port={{ item.port }} proto={{ item.proto }}
+  ufw: rule={{ item.rule }} port={{ item.port }} proto={{ item.proto }} from={{ item.from }}
   with_items: "{{ ufw_rules }}"
   notify:
     - reload ufw

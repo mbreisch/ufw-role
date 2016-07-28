@@ -16,9 +16,9 @@
     ufw_allow_ipv6: "no"
     ufw_ssh_port: 2222
     ufw_rules:
-        - { rule: 'limit', port: '{{ ufw_ssh_port | default("22") }}', proto: 'tcp' }
-        - { rule: 'allow', port: '2000', proto: 'udp' }
-        - { rule: 'allow', port: '25', proto: 'tcp' }
+        - { rule: 'limit', port: '{{ ufw_ssh_port | default("22") }}', proto: 'tcp', from: '127.0.0.1' }
+        - { rule: 'allow', port: '2000', proto: 'udp', from: 'any' }
+        - { rule: 'allow', port: '25', proto: 'tcp', from: '123.4.5.6' }
   roles:
     - role: ufw-role
   tasks:
