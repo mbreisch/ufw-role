@@ -1,2 +1,4 @@
 ---
 # vars file for mbreisch.ufw-role
+# ssh_port: 22
+# ipv6_enabled: no

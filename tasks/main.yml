@@ -12,6 +12,13 @@
   notify:
     - reload ufw
 
+- name: Configure IPV6
+  lineinfile: dest=/etc/default/ufw
+              regexp="^IPV6="
+              line="IPV6={{ ipv6_enabled | default('no')  }} "
+              state=present
+  notify: reload ufw
+
 - name: Configure ufw rules
   ufw: rule={{ item.rule }} port={{ item.port }} proto={{ item.proto }}
   with_items:
