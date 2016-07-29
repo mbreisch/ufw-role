@@ -16,13 +16,13 @@ Role Variables
 Variables:
 * ufw_ssh_port: 22
 * ufw_allow_ipv6: "no"
+* ufw_role_rules: []
+* ufw_callable_role:
 
 Defaults:
 * ```
-  ufw_rules:
+  ufw_minimal_rules:
       - { rule: 'limit', port: '{{ ufw_ssh_port | default("22") }}', proto: 'tcp', from: 'any' }
-      - { rule: 'allow', port: '80', proto: 'tcp', from: 'any' }
-      - { rule: 'allow', port: '443', proto: 'tcp', from: 'any' }
     ```
 
 Dependencies

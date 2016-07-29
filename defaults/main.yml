@@ -1,6 +1,4 @@
 ---
 # defaults file for mbreisch.ufw-role
-ufw_rules:
+ufw_minimal_rules:
     - { rule: 'limit', port: '{{ ufw_ssh_port | default("22") }}', proto: 'tcp', from: 'any' }
-    - { rule: 'allow', port: '80', proto: 'tcp', from: 'any' }
-    - { rule: 'allow', port: '443', proto: 'tcp', from: 'any' }

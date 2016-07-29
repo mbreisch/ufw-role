@@ -19,9 +19,15 @@
               state=present
   notify: reload ufw
 
-- name: Configure ufw rules
+- name: Configure minimal ufw rules
   ufw: rule={{ item.rule }} port={{ item.port }} proto={{ item.proto }} from={{ item.from }}
-  with_items: "{{ ufw_rules }}"
+  with_items: "{{ ufw_minimal_rules }}"
+  notify:
+    - reload ufw
+
+- name: Configure extra ufw rules for {{ ufw_callable_role | default('undefined...skipping...') }}
+  ufw: rule={{ item.rule }} port={{ item.port }} proto={{ item.proto }} from={{ item.from }}
+  with_items: "{{ ufw_role_rules | default([]) }}"
   notify:
     - reload ufw
 
