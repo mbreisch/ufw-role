@@ -1,6 +1,2 @@
 ---
 # vars file for mbreisch.ufw-role
-# ufw_ssh_port: 22
-# ufw_allow_ipv6: "no"
-# ufw_role_rules: []
-# ufw_callable_role:

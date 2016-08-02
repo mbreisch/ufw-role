@@ -13,17 +13,24 @@ Any pre-requisites that may not be covered by Ansible itself or the role should 
 Role Variables
 --------------
 
-Variables:
-* ufw_ssh_port: 22
-* ufw_allow_ipv6: "no"
-* ufw_role_rules: []
-* ufw_callable_role:
-
 Defaults:
-* ```
-  ufw_minimal_rules:
-      - { rule: 'limit', port: '{{ ufw_ssh_port | default("22") }}', proto: 'tcp', from: 'any' }
-    ```
+* ufw_allow_ipv6: "no"
+* ufw_port_rules: []
+* ufw_app_rules: []
+* ufw_allow_ipv6: "no"
+* ufw_default_input_policy: "DROP"
+* ufw_default_ouput_policy: "ACCEPT"
+* ufw_default_forward_policy: "DROP"
+* ufw_default_application_policy: "SKIP"
+* ufw_logging: "on"
+* ufw_state: enabled
+* 
+```
+ufw_policies:
+    - { direction: 'incoming', policy: 'reject' }
+    - { direction: 'outgoing', policy: 'allow' }
+    - { direction: 'routed', policy: 'deny'}
+```
 
 Dependencies
 ------------

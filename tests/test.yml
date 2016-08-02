@@ -14,11 +14,15 @@
   hosts: docker_containers
   vars:
     ufw_allow_ipv6: "no"
-    ufw_ssh_port: 2222
-    ufw_callable_role: "mbreisch.test"
-    ufw_role_rules:
-        - { rule: 'allow', port: '2000', proto: 'udp', from: 'any' }
-        - { rule: 'allow', port: '25', proto: 'tcp', from: '123.4.5.6' }
+    ufw_port_rules:
+        - { rule: 'allow', to_port: '2000', proto: 'udp', from_ip: 'any',log: yes}
+        - { rule: 'allow', to_port: '25', proto: 'tcp', from_ip: '123.4.5.6' }
+    ufw_app_rules:
+        - { name: "OpenSSH", rule: 'allow', log: yes, from_ip: '123.4.5.6'}
+    ufw_default_input_policy: "DROP"
+    ufw_default_ouput_policy: "ACCEPT"
+    ufw_default_forward_policy: "ACCEPT"
+    ufw_default_application_policy: "SKIP"
   roles:
     - role: ufw-role
   tasks:

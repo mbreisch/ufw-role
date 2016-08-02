@@ -1,4 +1,17 @@
 ---
 # defaults file for mbreisch.ufw-role
-ufw_minimal_rules:
-    - { rule: 'limit', port: '{{ ufw_ssh_port | default("22") }}', proto: 'tcp', from: 'any' }
+ufw_allow_ipv6: "no"
+ufw_port_rules: []
+ufw_app_rules: []
+ufw_allow_ipv6: "no"
+ufw_policies:
+    - { direction: 'incoming', policy: 'reject' }
+    - { direction: 'outgoing', policy: 'allow' }
+    - { direction: 'routed', policy: 'deny'}
+ufw_default_input_policy: "DROP"
+ufw_default_ouput_policy: "ACCEPT"
+ufw_default_forward_policy: "DROP"
+ufw_default_application_policy: "SKIP"
+# options: on, off, low, medium, high,full
+ufw_logging: "on"
+ufw_state: enabled

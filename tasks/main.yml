@@ -4,37 +4,84 @@
 - name: Ensure ufw is installed
   apt: name=ufw state=latest update_cache=yes
 
-- name: Configure ufw defaults
-  ufw: direction={{ item.direction }} policy={{ item.policy }}
-  with_items:
-    - { direction: 'incoming', policy: 'reject' }
-    - { direction: 'outgoing', policy: 'allow' }
-  notify:
-    - reload ufw
+- name: Setting default ufw policies (incoming, outgoing)
+  ufw:
+    direction: "{{ item.direction }}"
+    policy: "{{ item.policy }}"
+  with_items: "{{ufw_policies}}"
+  when: item.direction != "routed"
+
+- name: Setting default ufw policies (routed)
+  ufw:
+    direction: "{{ item.direction }}"
+    policy: "{{ item.policy }}"
+  with_items: "{{ ufw_policies }}"
+  when: item.direction == "routed"
 
 - name: Configure IPV6
   lineinfile: dest=/etc/default/ufw
               regexp="^IPV6="
-              line="IPV6={{ ufw_allow_ipv6 | default('no')  }} "
+              line="IPV6={{ ufw_allow_ipv6 }} "
               state=present
   notify: reload ufw
 
-- name: Configure minimal ufw rules
-  ufw: rule={{ item.rule }} port={{ item.port }} proto={{ item.proto }} from={{ item.from }}
-  with_items: "{{ ufw_minimal_rules }}"
+- name: Configure ufw port rules
+  ufw:
+    delete: "{{ item.delete | default(omit) }}"
+    direction: "{{ item.direction | default(omit) }}"
+    from_ip: "{{ item.from_ip | default(omit) }}"
+    from_port: "{{ item.from_port | default(omit) }}"
+    interface: "{{ item.interface | default(omit) }}"
+    log: "{{ item.log | default(omit) }}"
+    proto: "{{ item.proto }}"
+    rule: "{{ item.rule }}"
+    to_ip: "{{ item.to_ip | default(omit) }}"
+    to_port: "{{ item.to_port | default(omit) }}"
+  with_items: "{{ ufw_port_rules }}"
   notify:
     - reload ufw
 
-- name: Configure extra ufw rules for {{ ufw_callable_role | default('undefined...skipping...') }}
-  ufw: rule={{ item.rule }} port={{ item.port }} proto={{ item.proto }} from={{ item.from }}
-  with_items: "{{ ufw_role_rules | default([]) }}"
+- name: Configure ufw application rules
+  ufw:
+    name: "{{ item.name}}"
+    delete: "{{ item.delete | default(omit) }}"
+    log: "{{ item.log | default(omit) }}"
+    rule: "{{ item.rule }}"
+    from_ip: "{{ item.from_ip | default(omit) }}"
+  with_items: "{{ ufw_app_rules }}"
+
+- name: Update ufw forward policy settings
+  lineinfile: dest=/etc/default/ufw
+              regexp="^DEFAULT_FORWARD_POLICY"
+              line='DEFAULT_FORWARD_POLICY={{ ufw_default_forward_policy }}'
+              state=present
+  notify: reload ufw
+
+- name: Update ufw input policy settings
+  lineinfile: dest=/etc/default/ufw
+              regexp="^DEFAULT_INPUT_POLICY"
+              line='DEFAULT_INPUT_POLICY={{ ufw_default_input_policy }}'
+              state=present
+  notify: reload ufw
+
+- name: Update ufw output policy setting
+  lineinfile: dest=/etc/default/ufw
+              regexp="^DEFAULT_OUTPUT_POLICY"
+              line='DEFAULT_OUTPUT_POLICY={{ ufw_default_ouput_policy }}'
+              state=present
+  notify: reload ufw
+
+- name: Update ufw application policy setting
+  lineinfile: dest=/etc/default/ufw
+              regexp="^DEFAULT_APPLICATION_POLICY"
+              line='DEFAULT_APPLICATION_POLICY={{ ufw_default_application_policy }}'
+              state=present
+  notify: reload ufw
+
+- name: Configure ufw logging
+  ufw: logging={{ ufw_logging }}
   notify:
     - reload ufw
 
-- name: Enable ufw logging
-  ufw: logging=on
-  notify:
-    - reload ufw
-
-- name: Enable ufw
-  ufw: state=enabled
+- name: Configure ufw state
+  ufw: state={{ ufw_state }}
